@@ -155,3 +155,36 @@ class MainTests(unittest.TestCase):
         print(board)
         print(boardClickable)
         print(signPos)
+
+    def test_isSolved_0(self):
+        solution = [[1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9]
+                ]
+
+
+        board = [[1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9]
+                ]
+
+        flag=main.isSolved(solution, board)
+
+        self.assertEqual(True, flag)
+
+
+    def test_isSolved_1(self):
+        solution = [[1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9]
+                ]
+        board = [[1, 4, 7],
+                    [2, 5, 8],
+                    [3, 6, 9]
+                ]
+
+
+
+        flag=main.isSolved(solution, board)
+
+        self.assertEqual(False, flag)

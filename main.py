@@ -7,7 +7,7 @@ import numpy as np
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 cWidth: int = 100
-cHeight = 100
+cHeight: int = 100
 rows = cols = 6
 pieces = rows * cols
 pieces_per_group_row = rows // 2
@@ -34,10 +34,12 @@ pygame.display.set_caption('Tango')
 
 img_sun = pygame.image.load("./image/sun.jpg").convert()
 img_moon = pygame.image.load("./image/moon.jpg").convert()
+img_equal = pygame.image.load("./image/equal.png").convert()
+img_cross = pygame.image.load("./image/cross.png").convert()
 
-def showNotification(text):
+def showNotification(text, left, top):
     textSurface = connect4Font.render(text, False, (0, 0, 0))
-    screen.blit(textSurface, (0, 0))
+    screen.blit(textSurface, (left, top))
 
 
 '''
@@ -96,12 +98,12 @@ def initASolution():
 
 def provideClue(solution, board):
     levelChoice=[0,1,2] # the lower, the easier
-    charShowLevels = [8, 6, 4]
-    signShowLevels = [12, 10, 8]
+    charShowLevels = [10, 8, 6]
+    signShowLevels = [14, 12, 10]
 
     # level=random.choice(levelChoice)
 
-    level = 2
+    level = 0
 
     charShowCnt = charShowLevels[level]
     signShowCnt = signShowLevels[level]
@@ -124,7 +126,7 @@ def provideClue(solution, board):
     for k in range(signShowCnt):
         tmpPos = positions[k]
         if tmpPos<signs//2:
-            d='h'
+            d='h' # compare horizonally
             i=tmpPos//(cols-1)
             j=tmpPos%(cols-1)
             if (j+1)>=rows:
@@ -132,7 +134,7 @@ def provideClue(solution, board):
             signChar='=' if(solution[i][j]==solution[i][j+1]) else 'x'
         else:
             tmpPos-=signs//2
-            d='v'
+            d='v' # compare vertically
             i = tmpPos // rows
             j = tmpPos % rows
             if (i+1)>=cols:
@@ -269,12 +271,40 @@ def updateBoardByClue(signPos):
                     screen.blit(pygame.transform.scale(img_sun, (cWidth * scale, cHeight * scale)), (left, top))
 
     # udpate signs
+    signScale=0.2
+    for d,i,j,signChar in signPos:
+        print(d,i,j,signChar)
+        if d=='v':
+            left = (j+0.5-signScale/2) * cWidth
+            top = (i+1-signScale/2)*cHeight
+            if signChar=='=':
+                screen.blit(pygame.transform.scale(img_equal, (cWidth*signScale, cHeight*signScale)), (left, top))
+            elif signChar=='x':
+                screen.blit(pygame.transform.scale(img_cross, (cWidth*signScale, cHeight*signScale)), (left, top))
+        elif d=='h':
+            left = (j + 1-signScale/2) * cWidth
+            top = (i + 0.5-signScale/2) * cHeight
 
+        if signChar == '=':
+            screen.blit(pygame.transform.scale(img_equal, (cWidth * signScale, cHeight * signScale)), (left, top))
+        elif signChar == 'x':
+            screen.blit(pygame.transform.scale(img_cross, (cWidth * signScale, cHeight * signScale)), (left, top))
 
 def getMouseClickPos(pos):
     col = int(pos[0] / cWidth)
     row = int(pos[1] / cHeight)
     return col, row
+
+def isSolved(solution, board):
+    rows = len(solution)
+    cols = len(solution[0])
+
+    for i in range(rows):
+        for j in range(cols):
+            if (board[i][j]!=solution[i][j]):
+                return False
+
+    return True
 
 def buttonClick(pos, button):
 
@@ -288,12 +318,12 @@ def buttonClick(pos, button):
     top=row*cHeight+(cHeight*(1-scale)+LINE_WIDTH)//2
 
 
-
     if button == 1:  # left click
         # put sun
         board[row][col]=SUN
         print(board)
         screen.blit(pygame.transform.scale(img_sun, (cWidth*scale, cHeight*scale)), (left, top))
+
 
     # elif button == 2:  # middle click
     #     board[row][col] = BLANK
@@ -304,7 +334,8 @@ def buttonClick(pos, button):
         print(board)
         screen.blit(pygame.transform.scale(img_moon, (cWidth*scale, cHeight*scale)), (left, top))
 
-
+    if (isSolved(solution, board)):
+        showNotification('Well Done!', 0,0)
 
 
 # Press the green button in the gutter to run the script.
