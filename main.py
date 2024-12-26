@@ -94,6 +94,56 @@ def initASolution():
     return solution
 
 
+def provideClue(solution, board):
+    levelChoice=[0,1,2] # the lower, the easier
+    charShowLevels = [8, 6, 4]
+    signShowLevels = [12, 10, 8]
+
+    # level=random.choice(levelChoice)
+
+    level = 2
+
+    charShowCnt = charShowLevels[level]
+    signShowCnt = signShowLevels[level]
+
+    positions= [i for i in range(pieces)]
+    random.shuffle(positions)
+
+    for k in range(charShowCnt):
+        tmpPos=positions[k]
+        i=tmpPos//rows
+        j=tmpPos%rows
+        board[i][j]=solution[i][j]
+        boardClickable[i][j]=False
+
+    signs=(rows-1)*cols+(cols-1)*rows
+    positions = [i for i in range(signs)]
+    random.shuffle(positions)
+
+    signPos=[]
+    for k in range(signShowCnt):
+        tmpPos = positions[k]
+        if tmpPos<signs//2:
+            d='h'
+            i=tmpPos//(cols-1)
+            j=tmpPos%(cols-1)
+            if (j+1)>=rows:
+                print(tmpPos,d, i,j)
+            signChar='=' if(solution[i][j]==solution[i][j+1]) else 'x'
+        else:
+            tmpPos-=signs//2
+            d='v'
+            i = tmpPos // rows
+            j = tmpPos % rows
+            if (i+1)>=cols:
+                print(tmpPos,d, i,j)
+            signChar = '=' if (solution[i][j] == solution[i+1][j]) else 'x'
+
+        signPos.append((d,i,j,signChar))
+
+    return board, boardClickable, signPos
+
+
 def switchRowCol(solution):
     rows = len(solution)
     cols = len(solution[0])
@@ -253,55 +303,6 @@ def buttonClick(pos, button):
         board[row][col] = MOON
         print(board)
         screen.blit(pygame.transform.scale(img_moon, (cWidth*scale, cHeight*scale)), (left, top))
-
-def provideClue(solution, board):
-    levelChoice=[0,1,2] # the lower, the easier
-    charShowLevels = [8, 6, 4]
-    signShowLevels = [12, 10, 8]
-
-    # level=random.choice(levelChoice)
-
-    level = 2
-
-    charShowCnt = charShowLevels[level]
-    signShowCnt = signShowLevels[level]
-
-    positions= [i for i in range(pieces)]
-    random.shuffle(positions)
-
-    for k in range(charShowCnt):
-        tmpPos=positions[k]
-        i=tmpPos//rows
-        j=tmpPos%rows
-        board[i][j]=solution[i][j]
-        boardClickable[i][j]=False
-
-    signs=(rows-1)*cols+(cols-1)*rows
-    positions = [i for i in range(signs)]
-    random.shuffle(positions)
-
-    signPos=[]
-    for k in range(signShowCnt):
-        tmpPos = positions[k]
-        if tmpPos<signs//2:
-            d='h'
-            i=tmpPos//(cols-1)
-            j=tmpPos%(cols-1)
-            if (j+1)>=rows:
-                print(tmpPos,d, i,j)
-            signChar='=' if(solution[i][j]==solution[i][j+1]) else 'x'
-        else:
-            tmpPos-=signs//2
-            d='v'
-            i = tmpPos // rows
-            j = tmpPos % rows
-            if (i+1)>=cols:
-                print(tmpPos,d, i,j)
-            signChar = '=' if (solution[i][j] == solution[i+1][j]) else 'x'
-
-        signPos.append((d,i,j,signChar))
-
-    return board, boardClickable, signPos
 
 
 
